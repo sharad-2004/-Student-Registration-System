@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Student Form">
+    <title>Student Registration System</title>
+    <link rel="stylesheet" href="index.css">
+</head>
+<body>
+    <header>
+        <h1>Student Registration System</h1>
+        <p>Register student details such as name, ID, class, and roll number.</p>
+    </header>
+
+    <main>
+        <section class="registration-form">
+            <h2>Register Student</h2>
+            <form id="studentForm">
+                <label for="studentName">Student Name:</label>
+                <input type="text" id="studentName" required><br>
+                
+                <label for="studentId">Student ID:</label>
+                <input type="number" id="studentId" required><br>
+                
+                <label for="studentClass">Class:</label>
+                <input type="text" id="studentClass" required><br>
+                
+                <label for="rollNo">Roll No.:</label>
+                <input type="number" id="rollNo" required><br>
+                
+                <button type="button" onclick="addStudent()">Add</button>
+            </form>
+        </section>
+
+        <section class="display-section">
+            <h2>Student Records</h2>
+            <table id="studentTable">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>ID</th>
+                        <th>Class</th>
+                        <th>Roll No.</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Record of the students will be added over here -->
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <script>
+        // Array to hold student records
+let studentRecords = JSON.parse(localStorage.getItem('students')) || [];
+
+// Function to add a new student
+function addStudent() {
+    const name = document.getElementById('studentName').value;
+    const id = document.getElementById('studentId').value;
+    const className = document.getElementById('studentClass').value;
+    const rollNo = document.getElementById('rollNo').value;
+
+    if (name && id && className && rollNo) {
+        const student = { name, id, className, rollNo };
+        studentRecords.push(student);
+        localStorage.setItem('students', JSON.stringify(studentRecords));
+        displayStudents();
+        clearForm();
+    } else {
+        alert('Please fill out all fields.');
+    }
+}
+
+// Function to display students in the table
+function displayStudents() {
+    const tableBody = document.getElementById('studentTable').querySelector('tbody');
+    tableBody.innerHTML = '';
+
+    studentRecords.forEach((student, index) => {
+        const row = `<tr>
+            <td>${student.name}</td>
+            <td>${student.id}</td>
+            <td>${student.className}</td>
+            <td>${student.rollNo}</td>
+            <td>
+                <button class="action-btn reset-btn" onclick="editStudent(${index})">Reset</button>
+                <button class="action-btn delete-btn" onclick="deleteStudent(${index})">Delete</button>
+            </td>
+        </tr>`;
+        tableBody.innerHTML += row;
+    });
+}
+
+// Function to clear the form fields
+function clearForm() {
+    document.getElementById('studentName').value = '';
+    document.getElementById('studentId').value = '';
+    document.getElementById('studentClass').value = '';
+    document.getElementById('rollNo').value = '';
+}
+
+// Function to delete a student
+function deleteStudent(index) {
+    studentRecords.splice(index, 1);
+    localStorage.setItem('students', JSON.stringify(studentRecords));
+    displayStudents();
+}
+
+// Function to edit thw student
+function editStudent(index) {
+    const student = studentRecords[index];
+    document.getElementById('studentName').value = student.name;
+    document.getElementById('studentId').value = student.id;
+    document.getElementById('studentClass').value = student.className;
+    document.getElementById('rollNo').value = student.rollNo;
+
+    // Remove the student from the list to update it
+    deleteStudent(index);
+}
+
+// Initial call to display students if available
+displayStudents();
+
+    </script>
+</body>
+</html>
